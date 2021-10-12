@@ -23,6 +23,7 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.aruco.Aruco;
 import org.opencv.aruco.DetectorParameters;
 import org.opencv.aruco.Dictionary;
+import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
@@ -159,9 +160,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
             tvecs = new Mat();
 
             Aruco.estimatePoseSingleMarkers(corners, 0.04f, cameraMatrix, distCoeffs, rvecs, tvecs);
+
+            double r = Math.sqrt(rvecs.dot(rvecs));
+            double t = Math.sqrt(tvecs.dot(tvecs));
+
             for(int i = 0;i<ids.toArray().length;i++){
                 transformModel(tvecs.row(0), rvecs.row(0));
-                Aruco.drawAxis(rgb, cameraMatrix, distCoeffs, rvecs.row(i), tvecs.row(i), 0.02f);
+
+                Log.d("rvec", rvecs.row(i).toString());
+                Log.d("tvec", tvecs.row(i).toString());
+
+
+                Calib3d.drawFrameAxes(rgb, cameraMatrix, distCoeffs, rvecs.row(i), tvecs.row(i), 0.02f);
             }
 
         }
