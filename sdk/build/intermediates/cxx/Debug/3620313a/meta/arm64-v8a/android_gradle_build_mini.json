@@ -1,0 +1,33 @@
+{
+  "buildFiles": [
+    "/Users/penguo/Works/Unae2/git/ArUcoDetector/sdk/libcxx_helper/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/penguo/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+      "-C",
+      "/Users/penguo/Works/Unae2/git/ArUcoDetector/sdk/.cxx/Debug/3620313a/arm64-v8a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/penguo/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+    "-C",
+    "/Users/penguo/Works/Unae2/git/ArUcoDetector/sdk/.cxx/Debug/3620313a/arm64-v8a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {
+    "opencv_jni_shared-Debug-arm64-v8a": {
+      "artifactName": "opencv_jni_shared",
+      "buildCommandComponents": [
+        "/Users/penguo/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja",
+        "-C",
+        "/Users/penguo/Works/Unae2/git/ArUcoDetector/sdk/.cxx/Debug/3620313a/arm64-v8a",
+        "opencv_jni_shared"
+      ],
+      "abi": "arm64-v8a",
+      "output": "/Users/penguo/Works/Unae2/git/ArUcoDetector/sdk/.cxx/Debug/3620313a/arm64-v8a/libopencv_jni_shared.a",
+      "runtimeFiles": []
+    }
+  }
+}
