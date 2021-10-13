@@ -29,10 +29,7 @@
     "intermediatesFolder": "/Users/penguo/Works/Unae2/git/ArUcoDetector/sdk/build/intermediates/cxx/Debug/3620313a",
     "isDebuggableEnabled": true,
     "validAbiList": [
-      "ARMEABI_V7A",
-      "ARM64_V8A",
-      "X86",
-      "X86_64"
+      "X86"
     ],
     "buildTargetSet": [
       "opencv_jni_shared"
@@ -133,6 +130,7 @@
         "rootBuildGradleFolder": "/Users/penguo/Works/Unae2/git/ArUcoDetector",
         "sdkFolder": "/Users/penguo/Library/Android/sdk",
         "isBuildOnlyTargetAbiEnabled": true,
+        "ideBuildTargetAbi": "x86",
         "isCmakeBuildCohabitationEnabled": false,
         "isPrefabEnabled": false
       },

@@ -37,26 +37,18 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
     private Mat cameraMatrix;
     private Mat distCoeffs;
-
     private Mat rgb;
-
-    private Mat rvecs;
-    private Mat tvecs;
-
-    private MatOfInt ids;
-    private List<Mat> corners;
     private Dictionary dictionary;
     private DetectorParameters parameters;
 
-    public native void ConvertRGBtoGray(long matAddrInput, long matAddrResult);
-
+    public native void DetectMarkers(long matAddrInput, long matAddrResult, long params, long dictAddr, long camMatAddr, long distAddr);
+    public native boolean ReadCameraParameters(long camMatAddr, long distAddr);
 
     static {
         System.loadLibrary("opencv_java4");
         System.loadLibrary("native-lib");
     }
 
-    //    private Renderer3D renderer;
     private CameraBridgeViewBase camera;
 
     private final BaseLoaderCallback loaderCallback = new BaseLoaderCallback(this){
@@ -93,13 +85,6 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         camera.setVisibility(SurfaceView.VISIBLE);
         camera.setCvCameraViewListener(this);
         camera.setCameraIndex(0);
-
-//        renderer = new Renderer3D(this);
-
-//        SurfaceView surface = findViewById(R.id.main_surface);
-//        surface.setTransparent(true);
-//        surface.setSurfaceRenderer(renderer);
-
     }
 
     @Override
@@ -115,7 +100,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     private boolean loadCameraParams(){
         cameraMatrix = Mat.eye(3, 3, CvType.CV_64FC1);
         distCoeffs = Mat.zeros(5, 1, CvType.CV_64FC1);
-        return CameraParameters.tryLoad(this, cameraMatrix, distCoeffs);
+        return ReadCameraParameters(cameraMatrix.getNativeObjAddr(), distCoeffs.getNativeObjAddr()); //CameraParameters.tryLoad(this, cameraMatrix, distCoeffs);
     }
 
     @Override
@@ -137,44 +122,19 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     @Override
     public void onCameraViewStarted(int width, int height){
         rgb = new Mat();
-        corners = new LinkedList<>();
         parameters = DetectorParameters.create();
-        dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_6X6_50);
+        dictionary = Aruco.getPredefinedDictionary(Aruco.DICT_5X5_250);
+
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame){
-        Mat image = inputFrame.rgba();
-        Imgproc.cvtColor(inputFrame.rgba(), rgb, Imgproc.COLOR_RGBA2RGB);
-//
-        ids = new MatOfInt();
-        corners.clear();
+//        Log.d("camMat", String.valueOf(cameraMatrix.get(0,0)[0]));
+//        Log.d("coeffs", distCoeffs.toString());
 
-        Log.d("asnjvsv", "ASbv");
-        Aruco.detectMarkers(inputFrame.gray(), dictionary, corners, ids, parameters);
-
-        if(corners.size()>0){
-            Aruco.drawDetectedMarkers(rgb, corners, ids);
-
-            rvecs = new Mat();
-            tvecs = new Mat();
-
-            Aruco.estimatePoseSingleMarkers(corners, 0.04f, cameraMatrix, distCoeffs, rvecs, tvecs);
-
-            double r = Math.sqrt(rvecs.dot(rvecs));
-            double t = Math.sqrt(tvecs.dot(tvecs));
-
-            for(int i = 0;i<ids.toArray().length;i++){
-                transformModel(tvecs.row(0), rvecs.row(0));
-
-                Log.d("rvec", rvecs.row(i).toString());
-                Log.d("tvec", tvecs.row(i).toString());
-
-
-                Calib3d.drawFrameAxes(rgb, cameraMatrix, distCoeffs, rvecs.row(i), tvecs.row(i), 0.02f);
-            }
-
-        }
+        DetectMarkers(inputFrame.rgba().getNativeObjAddr(), rgb.getNativeObjAddr(),
+                parameters.getNativeObjAddr(), dictionary.getNativeObjAddr(),
+                cameraMatrix.getNativeObjAddr(), distCoeffs.getNativeObjAddr());
 
         return rgb;
     }
@@ -184,34 +144,9 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
         rgb.release();
     }
 
-    private void transformModel(final Mat tvec, final Mat rvec){
-        runOnUiThread(new Runnable(){
-            @Override
-            public void run(){
-                Log.d("tvec_000", (tvec.get(0, 0)[0] * 50) + "");
-                Log.d("-tvec_001", (tvec.get(0, 0)[1] * 50) + "");
-                Log.d("-tvec_002", (tvec.get(0, 0)[2] * 50) + "");
-
-                Log.d("-rvec_002", (rvec.get(0, 0)[2] * 50) + "");
-                Log.d("-rvec_001", (rvec.get(0, 0)[1] * 50) + "");
-                Log.d("-rvec_000", (rvec.get(0, 0)[0] * 50) + "");
-//                renderer.transform(
-//                        tvec.get(0, 0)[0]*50,
-//                        -tvec.get(0, 0)[1]*50,
-//                        -tvec.get(0, 0)[2]*50,
-//
-//                        rvec.get(0, 0)[2], //yaw
-//                        rvec.get(0, 0)[1], //pitch
-//                        rvec.get(0, 0)[0] //roll
-//                );
-            }
-        });
-    }
-
     protected List<? extends CameraBridgeViewBase> getCameraViewList() {
         return Collections.singletonList(camera);
     }
-
 
     //여기서부턴 퍼미션 관련 메소드
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 200;
