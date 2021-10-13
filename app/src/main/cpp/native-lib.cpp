@@ -64,9 +64,9 @@ Java_com_unae_arucodetector_MainActivity_DetectMarkers(JNIEnv *env, jobject thiz
     if(ids.size() > 0) {
         aruco::drawDetectedMarkers(matResult, corners, ids);
 
-//        for(unsigned int i = 0; i < ids.size(); i++)
-//            aruco::drawAxis(matResult, camMatrix, distCoeffs, rvecs[i], tvecs[i],
-//                            markerLength * 0.5f);
+        for(unsigned int i = 0; i < ids.size(); i++)
+            aruco::drawAxis(matResult, camMatrix, distCoeffs, rvecs[i], tvecs[i],
+                            markerLength * 0.5f);
     }
 
 }

@@ -6,13 +6,11 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -23,11 +21,8 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.aruco.Aruco;
 import org.opencv.aruco.DetectorParameters;
 import org.opencv.aruco.Dictionary;
-import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
-import org.opencv.imgproc.Imgproc;
 
 import static android.Manifest.permission.CAMERA;
 
@@ -42,7 +37,7 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
     private DetectorParameters parameters;
 
     public native void DetectMarkers(long matAddrInput, long matAddrResult, long params, long dictAddr, long camMatAddr, long distAddr);
-    public native boolean ReadCameraParameters(long camMatAddr, long distAddr);
+//    public native boolean ReadCameraParameters(long camMatAddr, long distAddr);
 
     static {
         System.loadLibrary("opencv_java4");
@@ -99,8 +94,20 @@ public class MainActivity extends Activity implements CvCameraViewListener2 {
 
     private boolean loadCameraParams(){
         cameraMatrix = Mat.eye(3, 3, CvType.CV_64FC1);
-        distCoeffs = Mat.zeros(5, 1, CvType.CV_64FC1);
-        return ReadCameraParameters(cameraMatrix.getNativeObjAddr(), distCoeffs.getNativeObjAddr()); //CameraParameters.tryLoad(this, cameraMatrix, distCoeffs);
+        distCoeffs = Mat.zeros(1, 5, CvType.CV_64FC1);
+
+        double camData[][] = new double[][]{ new double[]{3.1601688343613614e+03, 0., 2.0316219018707357e+03},
+                                                new double[]{0., 3.1579383184227572e+03, 1.5325905756651362e+03},
+                                                new double[]{0., 0., 1.}};
+        double distData[] = new double[]{4.6129050021544923e-03, 6.3054990312427894e-02,
+                                        -1.1576434624863847e-04, -1.7215787506533371e-03,
+                                        -2.4976694026384097e-02};
+        for (int i=0;i<3;i++)
+            cameraMatrix.put(i,0, camData[i]);
+        distCoeffs.put(0, 0, distData);
+
+        return true;
+//        return ReadCameraParameters(cameraMatrix.getNativeObjAddr(), distCoeffs.getNativeObjAddr()); //CameraParameters.tryLoad(this, cameraMatrix, distCoeffs);
     }
 
     @Override
